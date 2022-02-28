@@ -25,13 +25,14 @@ public class ThirdPersonController : MonoBehaviour
     public bool paused = false;
 
     private GameObject currentKey;
-    private bool key = false, destroy = false, unlocked = false;
+    private bool key = false, unlocked = false;
     private int keys = 0;
 
     [SerializeField]
     private Camera playerCamera;
     private void Awake()
     {
+        Cursor.visible = false;
         animator = this.GetComponent<Animator>();
         rb = this.GetComponent<Rigidbody>();
         playerController = new PlayerController();
@@ -72,26 +73,28 @@ public class ThirdPersonController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        
-        forceDirection += move.ReadValue<Vector2>().x * GetCameraRight(playerCamera) * movementForce;
-        forceDirection += move.ReadValue<Vector2>().y * GetCameraForward(playerCamera) * movementForce;
-
-        rb.AddForce(forceDirection, ForceMode.Impulse);
-        forceDirection = Vector3.zero;
-
-        if(rb.velocity.y < 0f)
+        if(!animator.GetCurrentAnimatorStateInfo(0).IsName("Reaching Out"))
         {
-            rb.velocity -= Vector3.down * Physics.gravity.y * Time.fixedDeltaTime;
-        }
+            forceDirection += move.ReadValue<Vector2>().x * GetCameraRight(playerCamera) * movementForce;
+            forceDirection += move.ReadValue<Vector2>().y * GetCameraForward(playerCamera) * movementForce;
 
-        Vector3 horizontalVelocity = rb.velocity;
-        horizontalVelocity.y = 0;
-        if(horizontalVelocity.sqrMagnitude > maxSpeed * maxSpeed)
-        {
-            rb.velocity = horizontalVelocity.normalized * maxSpeed + Vector3.up * rb.velocity.y;
-        }
+            rb.AddForce(forceDirection, ForceMode.Impulse);
+            forceDirection = Vector3.zero;
 
-        LookAt();
+            if (rb.velocity.y < 0f)
+            {
+                rb.velocity -= Vector3.down * Physics.gravity.y * Time.fixedDeltaTime;
+            }
+
+            Vector3 horizontalVelocity = rb.velocity;
+            horizontalVelocity.y = 0;
+            if (horizontalVelocity.sqrMagnitude > maxSpeed * maxSpeed)
+            {
+                rb.velocity = horizontalVelocity.normalized * maxSpeed + Vector3.up * rb.velocity.y;
+            }
+
+            LookAt();
+        }
     }
 
     private void LookAt()
@@ -135,7 +138,7 @@ public class ThirdPersonController : MonoBehaviour
     private bool IsGrounded()
     {
         Ray ray = new Ray(this.transform.position + Vector3.up * 0.25f, Vector3.down);
-        if(Physics.Raycast(ray, out RaycastHit hit, 0.3f))
+        if(Physics.Raycast(ray, out RaycastHit hit, 0.4f))
         {
             return true;
         }
@@ -160,7 +163,6 @@ public class ThirdPersonController : MonoBehaviour
         if(unlocked == true)
         {
             canvas.GetComponent<PauseMenuScript>().Win();
-            //unlocked = false;
         }
     }
 
@@ -200,17 +202,4 @@ public class ThirdPersonController : MonoBehaviour
             unlocked = false;
         }
     }
-    /*
-    void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.tag != "Key")
-        {
-            key = false;
-        }
-
-        if(collision.gameObject.tag != "Door")
-        {
-            unlocked = false;
-        }
-    }*/
 }

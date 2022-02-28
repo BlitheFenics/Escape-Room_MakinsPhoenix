@@ -11,6 +11,7 @@ public class PauseMenuScript : MonoBehaviour
     public void Resume()
     {
         pauseMenu.SetActive(false);
+        Cursor.visible = false;
         Time.timeScale = 1f;
         player.GetComponent<ThirdPersonController>().paused = false;
     }
@@ -18,12 +19,14 @@ public class PauseMenuScript : MonoBehaviour
     public void Pause()
     {
         pauseMenu.SetActive(true);
+        Cursor.visible = true;
         Time.timeScale = 0f;
         player.GetComponent<ThirdPersonController>().paused = true;
     }
 
     public void LoadMenu()
     {
+        Cursor.visible = true;
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
@@ -36,6 +39,7 @@ public class PauseMenuScript : MonoBehaviour
     public void Win()
     {
         win.SetActive(true);
+        Cursor.visible = true;
         Time.timeScale = 0f;
         player.GetComponent<ThirdPersonController>().paused = true;
     }
@@ -43,6 +47,7 @@ public class PauseMenuScript : MonoBehaviour
     public void Lose()
     {
         lose.SetActive(true);
+        Cursor.visible = true;
         Time.timeScale = 0f;
         player.GetComponent<ThirdPersonController>().paused = true;
     }
