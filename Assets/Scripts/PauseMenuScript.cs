@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class PauseMenuScript : MonoBehaviour
 {
     [SerializeField] GameObject player;
-    public GameObject pauseMenu;
+    public GameObject pauseMenu, win, lose;
 
     public void Resume()
     {
@@ -31,5 +31,19 @@ public class PauseMenuScript : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void Win()
+    {
+        win.SetActive(true);
+        Time.timeScale = 0f;
+        player.GetComponent<ThirdPersonController>().paused = true;
+    }
+
+    public void Lose()
+    {
+        lose.SetActive(true);
+        Time.timeScale = 0f;
+        player.GetComponent<ThirdPersonController>().paused = true;
     }
 }

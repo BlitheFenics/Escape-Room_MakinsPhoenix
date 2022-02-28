@@ -159,8 +159,8 @@ public class ThirdPersonController : MonoBehaviour
 
         if(unlocked == true)
         {
-            unlocked = false;
-            print("win");
+            canvas.GetComponent<PauseMenuScript>().Win();
+            //unlocked = false;
         }
     }
 
