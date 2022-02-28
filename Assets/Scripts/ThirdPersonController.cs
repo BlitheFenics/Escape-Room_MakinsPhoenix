@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class ThirdPersonController : MonoBehaviour
 {
     private PlayerController playerController;
     private InputAction move;
+    [SerializeField] GameObject text;
 
     private Animator animator;
     private Rigidbody rb;
@@ -20,14 +22,18 @@ public class ThirdPersonController : MonoBehaviour
     private float maxSpeed = 5f;
     private Vector3 forceDirection = Vector3.zero;
 
+    private GameObject currentKey;
+    private bool key = false, destroy = false, unlocked = false;
+    private int keys = 0;
+
     [SerializeField]
     private Camera playerCamera;
-
     private void Awake()
     {
         animator = this.GetComponent<Animator>();
         rb = this.GetComponent<Rigidbody>();
         playerController = new PlayerController();
+        text.GetComponent<Text>().text = "Keys: " + keys + "/5";
     }
 
     private void OnEnable()
@@ -137,6 +143,47 @@ public class ThirdPersonController : MonoBehaviour
 
     private void Interact(InputAction.CallbackContext obj)
     {
-        animator.SetTrigger("interact");
+        if (key == true)
+        {
+            animator.SetTrigger("interact");
+            keys += 1;
+            text.GetComponent<Text>().text = "Keys: " + keys + "/5";
+            SFXScript.instance.audio.PlayOneShot(SFXScript.instance.clip);
+            Destroy(currentKey);
+        }
+
+        if(unlocked == true)
+        {
+            print("win");
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Key")
+        {
+            currentKey = collision.gameObject;
+            key = true;
+        }
+        if (collision.gameObject.tag == "Door")
+        {
+            if(keys == 5)
+            {
+                unlocked = true;
+            }
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Key")
+        {
+            key = false;
+        }
+
+        if(collision.gameObject.tag == "Door")
+        {
+            unlocked = false;
+        }
     }
 }
