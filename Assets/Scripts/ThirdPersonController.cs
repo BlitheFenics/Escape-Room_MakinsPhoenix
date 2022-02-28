@@ -9,7 +9,7 @@ public class ThirdPersonController : MonoBehaviour
 {
     private PlayerController playerController;
     private InputAction move;
-    [SerializeField] GameObject text;
+    [SerializeField] GameObject text, canvas;
 
     private Animator animator;
     private Rigidbody rb;
@@ -21,6 +21,8 @@ public class ThirdPersonController : MonoBehaviour
     [SerializeField]
     private float maxSpeed = 5f;
     private Vector3 forceDirection = Vector3.zero;
+
+    public bool paused = false;
 
     private GameObject currentKey;
     private bool key = false, destroy = false, unlocked = false;
@@ -40,6 +42,7 @@ public class ThirdPersonController : MonoBehaviour
     {
         playerController.Player.Jump.started += DoJump;
         playerController.Player.Interact.started += Interact;
+        playerController.Player.Pause.started += PauseGame;
         move = playerController.Player.Move;
         playerController.Player.Enable();
     }
@@ -48,6 +51,7 @@ public class ThirdPersonController : MonoBehaviour
     {
         playerController.Player.Jump.started -= DoJump;
         playerController.Player.Interact.started -= Interact;
+        playerController.Player.Pause.started -= PauseGame;
         playerController.Player.Disable();
         
     }
@@ -149,12 +153,26 @@ public class ThirdPersonController : MonoBehaviour
             keys += 1;
             text.GetComponent<Text>().text = "Keys: " + keys + "/5";
             SFXScript.instance.audio.PlayOneShot(SFXScript.instance.clip);
+            key = false;
             Destroy(currentKey);
         }
 
         if(unlocked == true)
         {
+            unlocked = false;
             print("win");
+        }
+    }
+
+    private void PauseGame(InputAction.CallbackContext obj)
+    {
+        if(paused)
+        {
+            canvas.GetComponent<PauseMenuScript>().Resume();
+        }
+        else
+        {
+            canvas.GetComponent<PauseMenuScript>().Pause();
         }
     }
 
@@ -172,18 +190,27 @@ public class ThirdPersonController : MonoBehaviour
                 unlocked = true;
             }
         }
-    }
-
-    void OnCollisionExit(Collision collision)
-    {
-        if (collision.gameObject.tag == "Key")
+        if (collision.gameObject.tag != "Key")
         {
             key = false;
         }
 
-        if(collision.gameObject.tag == "Door")
+        if (collision.gameObject.tag != "Door")
         {
             unlocked = false;
         }
     }
+    /*
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag != "Key")
+        {
+            key = false;
+        }
+
+        if(collision.gameObject.tag != "Door")
+        {
+            unlocked = false;
+        }
+    }*/
 }
